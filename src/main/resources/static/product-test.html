@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>同城快吧 - 商品模块测试</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section {
+            background: #f5f5f5;
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 5px;
+        }
+        h2 { color: #333; }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button:hover { background: #45a049; }
+        .result {
+            background: #333;
+            color: #fff;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 3px;
+            font-family: monospace;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .test-case { margin: 10px 0; }
+    </style>
+</head>
+<body>
+<h1>🏪 同城快吧 - 商品模块测试</h1>
+
+<div class="section">
+    <h2>1. 📝 用户注册（先注册一个卖家）</h2>
+    <div class="test-case">
+        <button onclick="registerSeller()">注册卖家用户</button>
+    </div>
+</div>
+
+<div class="section">
+    <h2>2. 📦 商品发布测试</h2>
+    <div class="test-case">
+        <button onclick="publishProduct1()">发布商品1：二手手机</button>
+        <button onclick="publishProduct2()">发布商品2：笔记本电脑</button>
+        <button onclick="publishProduct3()">发布商品3：家具</button>
+    </div>
+</div>
+
+<div class="section">
+    <h2>3. 🔍 商品查询测试</h2>
+    <div class="test-case">
+        <button onclick="getAllProducts()">获取所有商品</button>
+        <button onclick="searchProducts('手机')">搜索"手机"</button>
+        <button onclick="getProductDetail(1)">查看商品1详情</button>
+    </div>
+</div>
+
+<div class="section">
+    <h2>4. 📊 商品管理测试</h2>
+    <div class="test-case">
+        <button onclick="getProductsBySeller(currentSellerId)">查看当前卖家的商品</button>
+        <button onclick="deactivateProduct(1)">下架商品1</button>
+        <button onclick="markAsSold(2)">标记商品2为已售出</button>
+    </div>
+</div>
+
+<h2>📋 测试结果：</h2>
+<div class="result" id="result">点击按钮开始测试...</div>
+
+<script>
+    let currentSellerId = 1; // 默认卖家ID
+
+    function showResult(message) {
+        document.getElementById('result').innerHTML =
+            typeof message === 'string' ? message : JSON.stringify(message, null, 2);
+    }
+
+    // 1. 注册卖家
+    function registerSeller() {
+        fetch('/api/user/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                username: 'seller001',
+                password: '123456',
+                nickname: '测试卖家',
+                phone: '13900139001',
+                email: 'seller@kb.com',
+                role: 'SELLER'
+            })
+        })
+            .then(r => r.json())
+            .then(data => {
+                currentSellerId = data.id;
+                showResult('卖家注册成功！ID: ' + currentSellerId + '\n' + JSON.stringify(data, null, 2));
+            })
+            .catch(err => showResult('注册失败: ' + err));
+    }
+
+    // 2. 发布商品 - 修改这三个函数
+    function publishProduct1() {
+        fetch('/api/product/publish', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: '二手iPhone 13 Pro 手机',
+                description: '99新，256G，使用一年，无拆无修，功能完好',
+                price: 4500.00,
+                originalPrice: 5500.00,
+                category: '电子产品',  // 改为中文分类
+                location: '北京市海淀区',
+                sellerId: 3,          // 改为用户ID 3（seller001）
+                sellerName: '测试卖家',
+                contactPhone: '13900139001',
+                stock: 1
+                // 注意：不要传status，Service会自动设置为1
+            })
+        })
+            .then(r => {
+                if (!r.ok) {
+                    return r.text().then(text => { throw new Error(text) });
+                }
+                return r.json();
+            })
+            .then(data => {
+                showResult('✅ 商品发布成功！商品ID：' + data.id +
+                    '\n' + JSON.stringify(data, null, 2));
+            })
+            .catch(err => showResult('❌ 发布失败: ' + err.message));
+    }
+
+    function publishProduct2() {
+        fetch('/api/product/publish', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: '华为MateBook笔记本电脑',
+                description: 'i7处理器，16G内存，512G SSD，轻薄便携',
+                price: 3200.00,
+                originalPrice: 4200.00,
+                category: '电子产品',  // 改为中文
+                location: '上海市浦东新区',
+                sellerId: 3,          // 用户ID 3
+                sellerName: '测试卖家',
+                contactPhone: '13900139001',
+                stock: 1
+            })
+        })
+            .then(r => r.json())
+            .then(data => showResult('商品发布成功！\n' + JSON.stringify(data, null, 2)))
+            .catch(err => showResult('发布失败: ' + err));
+    }
+
+    function publishProduct3() {
+        fetch('/api/product/publish', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                title: '实木书桌家具',
+                description: '1.2米长，实木材质，九成新',
+                price: 800.00,
+                category: '家具家居',  // 改为中文
+                location: '广州市天河区',
+                sellerId: 3,          // 用户ID 3
+                sellerName: '测试卖家',
+                contactPhone: '13900139001',
+                stock: 1
+            })
+        })
+            .then(r => r.json())
+            .then(data => showResult('商品发布成功！\n' + JSON.stringify(data, null, 2)))
+            .catch(err => showResult('发布失败: ' + err));
+    }
+
+    // 3. 查询商品
+    function getAllProducts() {
+        fetch('/api/product/list?page=0&size=10')
+            .then(r => r.json())
+            .then(data => showResult('商品列表：\n' + JSON.stringify(data, null, 2)))
+            .catch(err => showResult('查询失败: ' + err));
+    }
+
+    function searchProducts(keyword) {
+        fetch('/api/product/search?keyword=' + encodeURIComponent(keyword))
+            .then(r => r.json())
+            .then(data => showResult('搜索结果：\n' + JSON.stringify(data, null, 2)))
+            .catch(err => showResult('搜索失败: ' + err));
+    }
+
+    function getProductDetail(id) {
+        fetch('/api/product/' + id)
+            .then(r => r.json())
+            .then(data => showResult('商品详情：\n' + JSON.stringify(data, null, 2)))
+            .catch(err => showResult('查询失败: ' + err));
+    }
+
+    // 4. 商品管理
+    function getProductsBySeller(sellerId) {
+        fetch('/api/product/seller/' + sellerId)
+            .then(r => r.json())
+            .then(data => showResult('卖家商品：\n' + JSON.stringify(data, null, 2)))
+            .catch(err => showResult('查询失败: ' + err));
+    }
+
+    function deactivateProduct(productId) {
+        fetch('/api/product/deactivate/' + productId + '?sellerId=' + currentSellerId, {
+            method: 'PUT'
+        })
+            .then(r => r.json())
+            .then(data => showResult('下架成功：\n' + JSON.stringify(data, null, 2)))
+            .catch(err => showResult('操作失败: ' + err));
+    }
+
+    function markAsSold(productId) {
+        fetch('/api/product/sold/' + productId + '?sellerId=' + currentSellerId, {
+            method: 'PUT'
+        })
+            .then(r => r.json())
+            .then(data => showResult('标记为已售出：\n' + JSON.stringify(data, null, 2)))
+            .catch(err => showResult('操作失败: ' + err));
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>同城快吧 - 评价系统测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+            border-left: 5px solid #4299e1;
+        }
+        h2 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #4299e1, #38b2ac);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(66, 153, 225, 0.3);
+        }
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #38a169;
+        }
+        .input-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+        .result-box {
+            margin-top: 15px;
+            padding: 20px;
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .review-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            position: relative;
+        }
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .review-user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .review-rating {
+            color: #f6ad55;
+            font-size: 18px;
+        }
+        .review-content {
+            margin: 15px 0;
+            line-height: 1.6;
+        }
+        .review-images {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 10px 0;
+        }
+        .review-image {
+            width: 100px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .review-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 10px;
+            border-top: 1px solid #e2e8f0;
+            color: #718096;
+            font-size: 14px;
+        }
+        .review-actions {
+            display: flex;
+            gap: 15px;
+        }
+        .stats-card {
+            background: white;
+            border: 2px solid #c6f6d5;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+        .stats-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .average-rating {
+            text-align: center;
+        }
+        .rating-number {
+            font-size: 48px;
+            font-weight: bold;
+            color: #f6ad55;
+        }
+        .rating-stars {
+            font-size: 20px;
+            color: #f6ad55;
+        }
+        .rating-distribution {
+            margin-top: 20px;
+        }
+        .distribution-bar {
+            display: flex;
+            align-items: center;
+            margin: 8px 0;
+        }
+        .distribution-label {
+            width: 60px;
+            text-align: right;
+            margin-right: 10px;
+        }
+        .distribution-bar-bg {
+            flex: 1;
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        .distribution-bar-fill {
+            height: 100%;
+            background: #f6ad55;
+            border-radius: 10px;
+        }
+        .distribution-count {
+            width: 60px;
+            text-align: left;
+            margin-left: 10px;
+        }
+        .review-type-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .type-product {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+        .type-seller {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        .type-buyer {
+            background: #fed7e2;
+            color: #97266d;
+        }
+        .type-append {
+            background: #e9d8fd;
+            color: #553c9a;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>⭐ 同城快吧交易平台 - 评价系统测试</h1>
+    <p class="subtitle">测试完整的评价流程：创建评价 → 查看统计 → 追加评价 → 回复评价</p>
+
+    <!-- 第一步：评价类型说明 -->
+    <div class="test-section">
+        <h2>📋 第一步：了解评价类型</h2>
+        <div class="btn-group">
+            <button class="btn-secondary" onclick="getReviewTypes()">获取评价类型</button>
+        </div>
+        <div id="reviewTypesInfo"></div>
+    </div>
+
+    <!-- 第二步：创建评价 -->
+    <div class="test-section">
+        <h2>📝 第二步：创建评价</h2>
+
+        <div class="input-group">
+            <label>订单ID（必须是已完成的订单）：</label>
+            <input type="number" id="orderId" placeholder="输入订单ID" value="1">
+        </div>
+
+        <div class="input-group">
+            <label>买家ID：</label>
+            <input type="number" id="buyerId" placeholder="输入买家ID" value="1">
+        </div>
+
+        <div class="input-group">
+            <label>商品ID：</label>
+            <input type="number" id="productId" placeholder="输入商品ID" value="5">
+        </div>
+
+        <div class="input-group">
+            <label>评分（1-5星）：</label>
+            <select id="rating">
+                <option value="5">★★★★★ 5星 - 非常好</option>
+                <option value="4">★★★★☆ 4星 - 很好</option>
+                <option value="3">★★★☆☆ 3星 - 一般</option>
+                <option value="2">★★☆☆☆ 2星 - 较差</option>
+                <option value="1">★☆☆☆☆ 1星 - 很差</option>
+            </select>
+        </div>
+
+        <div class="input-group">
+            <label>评价内容：</label>
+            <textarea id="reviewContent" rows="3" placeholder="请输入评价内容...">商品质量很好，发货速度快，非常满意！</textarea>
+        </div>
+
+        <div class="input-group">
+            <label>图片URL（可选，多个用逗号分隔）：</label>
+            <input type="text" id="imageUrls" placeholder="例如: /uploads/image1.jpg,/uploads/image2.jpg">
+        </div>
+
+        <div class="input-group">
+            <label>
+                <input type="checkbox" id="isAnonymous"> 匿名评价
+            </label>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-primary" onclick="checkEligibility()">检查评价资格</button>
+            <button class="btn-success" onclick="createProductReview()">创建商品评价</button>
+            <button class="btn-secondary" onclick="createBuyerReview()">卖家评价买家</button>
+        </div>
+    </div>
+
+    <!-- 第三步：查看评价 -->
+    <div class="test-section">
+        <h2>👀 第三步：查看评价</h2>
+
+        <div class="input-group">
+            <label>商品ID（查看商品评价）：</label>
+            <input type="number" id="viewProductId" placeholder="输入商品ID" value="5">
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-primary" onclick="getProductReviews()">获取商品评价</button>
+            <button class="btn-secondary" onclick="getProductReviewStats()">查看评价统计</button>
+            <button class="btn-secondary" onclick="getHotReviews()">热门评价</button>
+            <button class="btn-secondary" onclick="getReviewsWithImages()">带图评价</button>
+        </div>
+
+        <div id="productReviews"></div>
+        <div id="reviewStats"></div>
+    </div>
+
+    <!-- 第四步：评价管理 -->
+    <div class="test-section">
+        <h2>🛠️ 第四步：评价管理</h2>
+
+        <div class="input-group">
+            <label>评价ID：</label>
+            <input type="number" id="manageReviewId" placeholder="输入评价ID">
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-secondary" onclick="getReviewDetail()">查看评价详情</button>
+            <button class="btn-success" onclick="likeReview()">点赞评价</button>
+            <button class="btn-secondary" onclick="appendReview()">追加评价</button>
+            <button class="btn-primary" onclick="replyToReview()">回复评价</button>
+            <button class="btn-danger" onclick="deleteReview()">删除评价</button>
+        </div>
+    </div>
+
+    <!-- 第五步：测试结果 -->
+    <div class="test-section">
+        <h2>📊 第五步：测试结果</h2>
+        <div class="result-box" id="result">
+            点击上方按钮开始测试，结果将显示在这里...
+        </div>
+    </div>
+</div>
+
+<script>
+    let lastResult = '';
+    let currentReviewId = null;
+
+    // 显示结果
+    function showResult(message, isError = false) {
+        const resultDiv = document.getElementById('result');
+        lastResult = typeof message === 'string' ? message : JSON.stringify(message, null, 2);
+
+        if (typeof message !== 'string') {
+            resultDiv.innerHTML = `<pre>${lastResult}</pre>`;
+        } else {
+            resultDiv.innerHTML = message;
+        }
+
+        // 高亮显示错误
+        if (isError) {
+            resultDiv.style.border = '2px solid #f56565';
+        } else {
+            resultDiv.style.border = '2px solid #2d3748';
+        }
+    }
+
+    // 1. 获取评价类型
+    async function getReviewTypes() {
+        try {
+            const response = await fetch('/api/review/types');
+            const data = await response.json();
+
+            if (data.success) {
+                let html = '<div class="stats-card">';
+                html += '<h3>📋 评价类型说明</h3>';
+
+                data.types.forEach(type => {
+                    html += `
+                            <div class="review-card">
+                                <div class="review-header">
+                                    <div>
+                                        <strong>${type.name}</strong>
+                                        <span class="review-type-badge type-${type.code.toLowerCase().split('_')[0]}">${type.code}</span>
+                                    </div>
+                                </div>
+                                <div class="review-content">${type.description}</div>
+                            </div>
+                        `;
+                });
+
+                html += '</div>';
+                document.getElementById('reviewTypesInfo').innerHTML = html;
+
+                showResult('评价类型获取成功：\n' + JSON.stringify(data.types, null, 2));
+            } else {
+                showResult('获取评价类型失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('获取评价类型失败：' + error.message, true);
+        }
+    }
+
+    // 2. 检查评价资格
+    async function checkEligibility() {
+        const orderId = document.getElementById('orderId').value;
+        const buyerId = document.getElementById('buyerId').value;
+
+        if (!orderId || !buyerId) {
+            alert('请输入订单ID和买家ID');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/review/check-eligibility?orderId=${orderId}&userId=${buyerId}`);
+            const data = await response.json();
+
+            if (data.success) {
+                const eligibility = data.eligibility;
+
+                if (eligibility.eligible) {
+                    showResult('✅ 可以评价！\n订单信息：' + JSON.stringify(eligibility.order, null, 2));
+                } else {
+                    showResult('❌ 不能评价：' + eligibility.reason, true);
+                }
+            } else {
+                showResult('检查评价资格失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('检查评价资格失败：' + error.message, true);
+        }
+    }
+
+    // 3. 创建商品评价
+    async function createProductReview() {
+        const orderId = document.getElementById('orderId').value;
+        const buyerId = document.getElementById('buyerId').value;
+        const productId = document.getElementById('productId').value;
+        const rating = document.getElementById('rating').value;
+        const content = document.getElementById('reviewContent').value;
+        const imageUrls = document.getElementById('imageUrls').value;
+        const isAnonymous = document.getElementById('isAnonymous').checked;
+
+        if (!orderId || !buyerId || !productId || !rating || !content) {
+            alert('请填写所有必填项');
+            return;
+        }
+
+        const imageUrlList = imageUrls ? imageUrls.split(',').map(url => url.trim()).filter(url => url) : [];
+
+        try {
+            const params = new URLSearchParams({
+                orderId,
+                buyerId,
+                productId,
+                rating,
+                content,
+                isAnonymous: isAnonymous.toString()
+            });
+
+            const url = `/api/review/product/create?${params.toString()}`;
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: imageUrlList.length > 0 ? JSON.stringify(imageUrlList) : '[]'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                currentReviewId = data.review.id;
+                document.getElementById('manageReviewId').value = currentReviewId;
+
+                showResult('✅ 评价创建成功！\n评价信息：' + JSON.stringify(data.review, null, 2));
+
+                // 自动刷新评价列表
+                setTimeout(() => getProductReviewStats(), 1000);
+            } else {
+                showResult('评价创建失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('评价创建失败：' + error.message, true);
+        }
+    }
+
+    // 4. 卖家评价买家
+    async function createBuyerReview() {
+        const orderId = document.getElementById('orderId').value;
+        const buyerId = document.getElementById('buyerId').value;
+        const sellerId = prompt('请输入卖家ID：', '3');
+        const rating = prompt('请输入评分（1-5）：', '5');
+        const content = prompt('请输入评价内容：', '买家很好沟通，交易愉快！');
+
+        if (!orderId || !buyerId || !sellerId || !rating || !content) {
+            alert('请填写所有必填项');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/review/buyer/create?orderId=${orderId}&sellerId=${sellerId}&buyerId=${buyerId}&rating=${rating}&content=${encodeURIComponent(content)}`, {
+                method: 'POST'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showResult('✅ 买家评价创建成功！\n评价信息：' + JSON.stringify(data.review, null, 2));
+            } else {
+                showResult('买家评价创建失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('买家评价创建失败：' + error.message, true);
+        }
+    }
+
+    // 5. 获取商品评价
+    async function getProductReviews() {
+        const productId = document.getElementById('viewProductId').value;
+
+        if (!productId) {
+            alert('请输入商品ID');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/review/product/${productId}?page=0&size=10&sortBy=latest`);
+            const data = await response.json();
+
+            if (data.success) {
+                displayProductReviews(data.reviews);
+                showResult('获取商品评价成功，共 ' + data.reviews.length + ' 条');
+            } else {
+                showResult('获取商品评价失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('获取商品评价失败：' + error.message, true);
+        }
+    }
+
+    // 6. 显示商品评价
+    function displayProductReviews(reviews) {
+        const container = document.getElementById('productReviews');
+
+        if (!reviews || reviews.length === 0) {
+            container.innerHTML = '<div class="review-card">暂无评价</div>';
+            return;
+        }
+
+        let html = '<div class="stats-card">';
+        html += `<h3>📝 商品评价（${reviews.length}条）</h3>`;
+
+        reviews.forEach(review => {
+            const typeClass = `type-${review.type.toLowerCase().split('_')[0]}`;
+            const typeText = review.type === 'PRODUCT_REVIEW' ? '商品评价' :
+                review.type === 'SELLER_REVIEW' ? '卖家评价' :
+                    review.type === 'BUYER_REVIEW' ? '买家评价' : '追加评价';
+
+            let stars = '';
+            for (let i = 0; i < 5; i++) {
+                stars += i < review.rating ? '★' : '☆';
+            }
+
+            let imagesHtml = '';
+            if (review.imageUrls) {
+                const images = review.imageUrls.split(',').filter(img => img);
+                if (images.length > 0) {
+                    imagesHtml = '<div class="review-images">';
+                    images.forEach(img => {
+                        imagesHtml += `<img src="${img}" class="review-image" onclick="window.open('${img}', '_blank')" title="点击查看大图">`;
+                    });
+                    imagesHtml += '</div>';
+                }
+            }
+
+            html += `
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="review-user">
+                                <strong>${review.isAnonymous ? '匿名用户' : review.buyerName}</strong>
+                                <span class="review-type-badge ${typeClass}">${typeText}</span>
+                            </div>
+                            <div class="review-rating" title="${review.rating}星">
+                                ${stars}
+                            </div>
+                        </div>
+
+                        <div class="review-content">
+                            ${review.content || '（无评价内容）'}
+                        </div>
+
+                        ${imagesHtml}
+
+                        ${review.hasReply ? `
+                            <div class="review-card" style="background: #f0fff4; margin-top: 10px;">
+                                <div class="review-header">
+                                    <strong>卖家回复：</strong>
+                                </div>
+                                <div class="review-content">${review.replyContent}</div>
+                            </div>
+                        ` : ''}
+
+                        <div class="review-footer">
+                            <div>
+                                ${new Date(review.createTime).toLocaleString()}
+                                ${review.replyCount > 0 ? ` · 追加${review.replyCount}条` : ''}
+                            </div>
+                            <div class="review-actions">
+                                <span>❤️ ${review.likeCount}</span>
+                                <span>👁️ ${review.viewCount}</span>
+                                <button onclick="setManageReviewId(${review.id})" style="background: #4299e1; color: white; border: none; padding: 4px 12px; border-radius: 4px; cursor: pointer;">管理</button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+        });
+
+        html += '</div>';
+        container.innerHTML = html;
+    }
+
+    // 7. 获取评价统计
+    async function getProductReviewStats() {
+        const productId = document.getElementById('viewProductId').value;
+
+        if (!productId) {
+            alert('请输入商品ID');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/review/product/${productId}/stats`);
+            const data = await response.json();
+
+            if (data.success) {
+                displayReviewStats(data.stats, data.ratingDistribution);
+                showResult('获取评价统计成功');
+            } else {
+                showResult('获取评价统计失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('获取评价统计失败：' + error.message, true);
+        }
+    }
+
+    // 8. 显示评价统计
+    function displayReviewStats(stats, distribution) {
+        const container = document.getElementById('reviewStats');
+
+        let html = '<div class="stats-card">';
+        html += '<div class="stats-header">';
+        html += `<h3>📊 评价统计</h3>`;
+        html += `<div>总评价数：<strong>${stats.totalReviews}</strong></div>`;
+        html += '</div>';
+
+        // 平均评分
+        html += `
+                <div class="average-rating">
+                    <div class="rating-number">${stats.averageRating.toFixed(1)}</div>
+                    <div class="rating-stars">${getStars(stats.averageRating)}</div>
+                    <div style="color: #718096; margin-top: 5px;">平均评分</div>
+                </div>
+            `;
+
+        // 评分分布
+        html += '<div class="rating-distribution">';
+        html += '<h4>评分分布</h4>';
+
+        const total = stats.totalReviews || 1;
+        for (let i = 5; i >= 1; i--) {
+            const count = distribution[i] || 0;
+            const percentage = Math.round((count / total) * 100);
+
+            html += `
+                    <div class="distribution-bar">
+                        <div class="distribution-label">${i}星</div>
+                        <div class="distribution-bar-bg">
+                            <div class="distribution-bar-fill" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="distribution-count">${count} (${percentage}%)</div>
+                    </div>
+                `;
+        }
+
+        // 其他统计
+        html += `
+                <div style="margin-top: 20px; padding-top: 15px; border-top: 1px solid #e2e8f0;">
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold; color: #4299e1;">${stats.withImageCount}</div>
+                            <div style="color: #718096; font-size: 12px;">带图评价</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold; color: #48bb78;">${stats.appendCount}</div>
+                            <div style="color: #718096; font-size: 12px;">追加评价</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold; color: #f6ad55;">${stats.replyCount}</div>
+                            <div style="color: #718096; font-size: 12px;">已回复</div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 24px; font-weight: bold; color: #9f7aea;">${stats.totalReviews}</div>
+                            <div style="color: #718096; font-size: 12px;">总计</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+        html += '</div></div>';
+        container.innerHTML = html;
+    }
+
+    // 9. 辅助函数：生成星标
+    function getStars(rating) {
+        let stars = '';
+        const fullStars = Math.floor(rating);
+        const hasHalfStar = rating % 1 >= 0.5;
+
+        for (let i = 0; i < fullStars; i++) stars += '★';
+        if (hasHalfStar) stars += '☆';
+        for (let i = stars.length; i < 5; i++) stars += '☆';
+
+        return stars;
+    }
+
+    // 10. 设置管理评价ID
+    function setManageReviewId(reviewId) {
+        document.getElementById('manageReviewId').value = reviewId;
+        showResult(`已设置管理评价ID: ${reviewId}`);
+    }
+
+    // 11. 获取评价详情
+    async function getReviewDetail() {
+        const reviewId = document.getElementById('manageReviewId').value;
+
+        if (!reviewId) {
+            alert('请输入评价ID');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/review/${reviewId}`);
+            const data = await response.json();
+
+            if (data.success) {
+                showResult('评价详情：\n' + JSON.stringify(data.review, null, 2));
+            } else {
+                showResult('获取评价详情失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('获取评价详情失败：' + error.message, true);
+        }
+    }
+
+    // 12. 点赞评价
+    async function likeReview() {
+        const reviewId = document.getElementById('manageReviewId').value;
+        const userId = document.getElementById('buyerId').value || '1';
+
+        if (!reviewId) {
+            alert('请输入评价ID');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/review/${reviewId}/like?userId=${userId}`, {
+                method: 'POST'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showResult('✅ 点赞成功！\n更新后的评价：' + JSON.stringify(data.review, null, 2));
+            } else {
+                showResult('点赞失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('点赞失败：' + error.message, true);
+        }
+    }
+
+    // 13. 追加评价
+    async function appendReview() {
+        const reviewId = document.getElementById('manageReviewId').value;
+        const userId = document.getElementById('buyerId').value || '1';
+
+        if (!reviewId) {
+            alert('请输入评价ID');
+            return;
+        }
+
+        const content = prompt('请输入追加评价内容：', '使用一段时间后，质量确实不错，再来追评！');
+        const images = prompt('请输入追加图片URL（多个用逗号分隔，可选）：', '');
+
+        if (!content) {
+            alert('请输入追加评价内容');
+            return;
+        }
+
+        const imageUrls = images ? images.split(',').map(url => url.trim()).filter(url => url) : [];
+
+        try {
+            const params = new URLSearchParams({
+                parentReviewId: reviewId,
+                userId
+            });
+
+            const url = `/api/review/append?${params.toString()}`;
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: imageUrls.length > 0 ? JSON.stringify(imageUrls) : '[]'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showResult('✅ 追加评价成功！\n追加评价：' + JSON.stringify(data.review, null, 2));
+            } else {
+                showResult('追加评价失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('追加评价失败：' + error.message, true);
+        }
+    }
+
+    // 14. 回复评价
+    async function replyToReview() {
+        const reviewId = document.getElementById('manageReviewId').value;
+        const respondentId = prompt('请输入回复者ID（卖家回复买家评价）：', '3');
+        const replyContent = prompt('请输入回复内容：', '感谢您的评价，我们会继续努力！');
+
+        if (!reviewId || !respondentId || !replyContent) {
+            alert('请填写所有必填项');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/review/reply?reviewId=${reviewId}&respondentId=${respondentId}&replyContent=${encodeURIComponent(replyContent)}`, {
+                method: 'POST'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showResult('✅ 回复成功！\n更新后的评价：' + JSON.stringify(data.review, null, 2));
+            } else {
+                showResult('回复失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('回复失败：' + error.message, true);
+        }
+    }
+
+    // 15. 删除评价
+    async function deleteReview() {
+        const reviewId = document.getElementById('manageReviewId').value;
+        const userId = prompt('请输入用户ID（确认删除）：', '1');
+
+        if (!reviewId || !userId) {
+            alert('请输入评价ID和用户ID');
+            return;
+        }
+
+        if (!confirm('确定要删除这条评价吗？此操作不可恢复。')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/review/${reviewId}?userId=${userId}`, {
+                method: 'DELETE'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showResult('✅ 评价删除成功！');
+            } else {
+                showResult('删除评价失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('删除评价失败：' + error.message, true);
+        }
+    }
+
+    // 16. 获取热门评价
+    async function getHotReviews() {
+        const productId = document.getElementById('viewProductId').value;
+
+        if (!productId) {
+            alert('请输入商品ID');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/review/product/${productId}/hot?limit=5`);
+            const data = await response.json();
+
+            if (data.success) {
+                showResult('热门评价：\n' + JSON.stringify(data.hotReviews, null, 2));
+            } else {
+                showResult('获取热门评价失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('获取热门评价失败：' + error.message, true);
+        }
+    }
+
+    // 17. 获取带图评价
+    async function getReviewsWithImages() {
+        const productId = document.getElementById('viewProductId').value;
+
+        if (!productId) {
+            alert('请输入商品ID');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/review/product/${productId}/with-images?limit=5`);
+            const data = await response.json();
+
+            if (data.success) {
+                showResult('带图评价：\n' + JSON.stringify(data.reviewsWithImages, null, 2));
+            } else {
+                showResult('获取带图评价失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('获取带图评价失败：' + error.message, true);
+        }
+    }
+
+    // 页面加载时显示欢迎信息
+    window.onload = function() {
+        showResult('欢迎使用同城快吧评价系统测试！\n\n请按以下步骤测试：\n1. 了解评价类型\n2. 创建商品评价（需要已完成的订单）\n3. 查看商品评价和统计\n4. 管理评价（点赞、追加、回复等）');
+
+        // 自动获取评价类型
+        setTimeout(() => getReviewTypes(), 500);
+    };
+</script>
+</body>
+</html>

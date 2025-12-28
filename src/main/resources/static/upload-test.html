@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>图片上传测试</title>
+    <style>
+        body { font-family: Arial; margin: 20px; }
+        .upload-area {
+            border: 2px dashed #ccc;
+            padding: 30px;
+            text-align: center;
+            margin: 20px 0;
+            border-radius: 10px;
+        }
+        .preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        .preview img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .result {
+            background: #f5f5f5;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+<h1>🖼️ 商品图片上传测试</h1>
+
+<div class="upload-area" id="dropArea">
+    <p>📁 拖放图片到这里，或点击选择文件</p>
+    <input type="file" id="fileInput" multiple accept="image/*">
+    <p>支持格式：JPG, PNG, GIF | 最大5MB/张</p>
+</div>
+
+<div class="preview" id="preview"></div>
+
+<div>
+    <button onclick="uploadSingle()">上传单张图片</button>
+    <button onclick="uploadMultiple()">上传多张图片</button>
+    <button onclick="clearPreview()">清空预览</button>
+</div>
+
+<div class="result" id="result">
+    上传结果将显示在这里...
+</div>
+
+<script>
+    let selectedFiles = [];
+
+    // 文件选择处理
+    document.getElementById('fileInput').addEventListener('change', function(e) {
+        selectedFiles = Array.from(e.target.files);
+        updatePreview();
+    });
+
+    // 拖放处理
+    const dropArea = document.getElementById('dropArea');
+    dropArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        dropArea.style.borderColor = '#4CAF50';
+    });
+
+    dropArea.addEventListener('dragleave', () => {
+        dropArea.style.borderColor = '#ccc';
+    });
+
+    dropArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        dropArea.style.borderColor = '#ccc';
+        selectedFiles = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith('image/'));
+        updatePreview();
+    });
+
+    // 更新预览
+    function updatePreview() {
+        const preview = document.getElementById('preview');
+        preview.innerHTML = '';
+
+        selectedFiles.forEach((file, index) => {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = document.createElement('img');
+                img.src = e.target.result;
+                img.title = file.name + ' (' + formatFileSize(file.size) + ')';
+                preview.appendChild(img);
+            };
+            reader.readAsDataURL(file);
+        });
+
+        document.getElementById('result').innerHTML =
+            `已选择 ${selectedFiles.length} 张图片，点击上传按钮开始上传`;
+    }
+
+    // 上传单张图片
+    function uploadSingle() {
+        if (selectedFiles.length === 0) {
+            alert('请先选择图片');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('file', selectedFiles[0]);
+
+        fetch('/api/upload/single', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                showResult('单张图片上传结果：', data);
+            })
+            .catch(err => {
+                showResult('上传失败：', {success: false, message: err.message});
+            });
+    }
+
+    // 上传多张图片
+    function uploadMultiple() {
+        if (selectedFiles.length === 0) {
+            alert('请先选择图片');
+            return;
+        }
+
+        const formData = new FormData();
+        selectedFiles.forEach(file => {
+            formData.append('files', file);
+        });
+
+        fetch('/api/upload/multiple', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                showResult('多张图片上传结果：', data);
+            })
+            .catch(err => {
+                showResult('上传失败：', {success: false, message: err.message});
+            });
+    }
+
+    // 清空预览
+    function clearPreview() {
+        selectedFiles = [];
+        document.getElementById('preview').innerHTML = '';
+        document.getElementById('fileInput').value = '';
+        document.getElementById('result').innerHTML = '已清空选择';
+    }
+
+    // 显示结果
+    function showResult(title, data) {
+        const resultDiv = document.getElementById('result');
+        resultDiv.innerHTML = `<strong>${title}</strong><br>` +
+            JSON.stringify(data, null, 2);
+    }
+
+    // 格式化文件大小
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    // 点击区域触发文件选择
+    dropArea.addEventListener('click', () => {
+        document.getElementById('fileInput').click();
+    });
+</script>
+</body>
+</html>

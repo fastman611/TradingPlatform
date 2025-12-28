@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>同城快吧 - 订单模块测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #718096;
+            margin-bottom: 30px;
+            font-size: 16px;
+        }
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f7fafc;
+            border-radius: 10px;
+            border-left: 5px solid #4299e1;
+        }
+        h2 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+        }
+        .btn-primary {
+            background: linear-gradient(to right, #4299e1, #38b2ac);
+            color: white;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(66, 153, 225, 0.3);
+        }
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #38a169;
+        }
+        .input-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+        }
+        .result-box {
+            margin-top: 15px;
+            padding: 20px;
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 10px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre-wrap;
+            word-break: break-all;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .result-title {
+            color: #a0aec0;
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .copy-btn {
+            background: #4a5568;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 5px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .order-flow {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            padding: 15px;
+            background: #edf2f7;
+            border-radius: 8px;
+        }
+        .flow-step {
+            text-align: center;
+            flex: 1;
+            padding: 10px;
+        }
+        .step-number {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            line-height: 30px;
+            background: #4299e1;
+            color: white;
+            border-radius: 50%;
+            margin-bottom: 5px;
+        }
+        .step-active .step-number {
+            background: #48bb78;
+        }
+        .product-card {
+            background: white;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .product-img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        .product-info {
+            flex: 1;
+        }
+        .product-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .product-price {
+            color: #f56565;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .order-info {
+            background: #f0fff4;
+            border: 2px solid #c6f6d5;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+        .info-row {
+            display: flex;
+            margin: 8px 0;
+        }
+        .info-label {
+            width: 120px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+        .info-value {
+            flex: 1;
+            color: #2d3748;
+        }
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        .status-pending {
+            background: #fed7d7;
+            color: #c53030;
+        }
+        .status-paid {
+            background: #fed7e2;
+            color: #97266d;
+        }
+        .status-shipped {
+            background: #c6f6d5;
+            color: #22543d;
+        }
+        .status-completed {
+            background: #bee3f8;
+            color: #2c5282;
+        }
+        .status-cancelled {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🛒 同城快吧交易平台 - 订单模块测试</h1>
+    <p class="subtitle">测试完整的订单生命周期：创建 → 支付 → 发货 → 收货 → 完成</p>
+
+    <!-- 订单流程展示 -->
+    <div class="order-flow">
+        <div class="flow-step step-active">
+            <div class="step-number">1</div>
+            <div>创建订单</div>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">2</div>
+            <div>支付订单</div>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">3</div>
+            <div>卖家发货</div>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">4</div>
+            <div>确认收货</div>
+        </div>
+        <div class="flow-step">
+            <div class="step-number">5</div>
+            <div>订单完成</div>
+        </div>
+    </div>
+
+    <!-- 第一步：准备数据 -->
+    <div class="test-section">
+        <h2>📋 第一步：准备测试数据</h2>
+        <div class="input-group">
+            <label>买家ID（使用现有的用户ID，如1、2、3）：</label>
+            <input type="number" id="buyerId" value="1" placeholder="输入买家用户ID">
+        </div>
+        <div class="input-group">
+            <label>卖家ID（商品所属卖家，如3）：</label>
+            <input type="number" id="sellerId" value="3" placeholder="输入卖家用户ID">
+        </div>
+        <div class="input-group">
+            <label>商品ID（选择要购买的商品，从1-7）：</label>
+            <input type="number" id="productId" value="5" placeholder="输入商品ID">
+        </div>
+        <div class="input-group">
+            <label>购买数量：</label>
+            <input type="number" id="quantity" value="1" min="1">
+        </div>
+        <button class="btn-primary" onclick="loadProductInfo()">加载商品信息</button>
+
+        <div id="productInfo" style="display: none;">
+            <div class="product-card">
+                <img id="productImage" src="" class="product-img" alt="商品图片">
+                <div class="product-info">
+                    <div class="product-title" id="productTitle"></div>
+                    <div>价格: <span class="product-price" id="productPrice"></span></div>
+                    <div>库存: <span id="productStock"></span></div>
+                    <div>卖家: <span id="productSeller"></span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 第二步：创建订单 -->
+    <div class="test-section">
+        <h2>🛍️ 第二步：创建订单</h2>
+        <div class="input-group">
+            <label>收货地址：</label>
+            <input type="text" id="address" value="北京市海淀区中关村大街1号" placeholder="输入收货地址">
+        </div>
+        <div class="input-group">
+            <label>联系电话：</label>
+            <input type="text" id="phone" value="13800138000" placeholder="输入联系电话">
+        </div>
+        <div class="input-group">
+            <label>买家留言：</label>
+            <textarea id="note" rows="2" placeholder="请输入留言（选填）"></textarea>
+        </div>
+        <div class="btn-group">
+            <button class="btn-primary" onclick="createOrder()">创建订单</button>
+            <button class="btn-secondary" onclick="generateOrderNo()">生成订单号</button>
+        </div>
+    </div>
+
+    <!-- 第三步：订单管理 -->
+    <div class="test-section">
+        <h2>📦 第三步：订单管理操作</h2>
+        <div class="input-group">
+            <label>订单ID（创建订单后自动填充）：</label>
+            <input type="text" id="orderId" placeholder="订单ID" readonly>
+        </div>
+        <div class="input-group">
+            <label>订单号：</label>
+            <input type="text" id="orderNo" placeholder="订单号" readonly>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-primary" onclick="getOrderDetail()">查询订单详情</button>
+            <button class="btn-success" onclick="payOrder()">模拟支付</button>
+            <button class="btn-secondary" onclick="shipOrder()">卖家发货</button>
+            <button class="btn-secondary" onclick="confirmDelivery()">确认收货</button>
+            <button class="btn-danger" onclick="cancelOrder()">取消订单</button>
+        </div>
+
+        <div class="btn-group">
+            <button class="btn-secondary" onclick="getBuyerOrders()">查看买家订单</button>
+            <button class="btn-secondary" onclick="getSellerOrders()">查看卖家订单</button>
+            <button class="btn-secondary" onclick="getOrderStats()">订单统计</button>
+            <button class="btn-secondary" onclick="getStatusList()">状态列表</button>
+        </div>
+    </div>
+
+    <!-- 第四步：订单信息展示 -->
+    <div class="test-section">
+        <h2>📊 第四步：订单信息</h2>
+        <div id="orderDetail" class="order-info" style="display: none;">
+            <!-- 订单详情会动态填充到这里 -->
+        </div>
+    </div>
+
+    <!-- 第五步：测试结果 -->
+    <div class="test-section">
+        <h2>📋 测试结果</h2>
+        <div class="result-title">
+            <span>API响应数据：</span>
+            <button class="copy-btn" onclick="copyResult()">复制结果</button>
+        </div>
+        <div class="result-box" id="result">
+            点击上方按钮开始测试，结果将显示在这里...
+        </div>
+    </div>
+</div>
+
+<script>
+    let lastResult = '';
+    let currentOrder = null;
+
+    // 显示结果
+    function showResult(message, isError = false) {
+        const resultDiv = document.getElementById('result');
+        lastResult = typeof message === 'string' ? message : JSON.stringify(message, null, 2);
+
+        if (typeof message !== 'string') {
+            resultDiv.innerHTML = `<pre>${lastResult}</pre>`;
+        } else {
+            resultDiv.innerHTML = message;
+        }
+
+        // 更新状态显示
+        const statusSpan = document.querySelector('.result-title span');
+        const statusText = isError ? '❌ 请求失败' : '✅ 请求成功';
+        const statusClass = isError ? 'status-error' : 'status-success';
+
+        if (!statusSpan.innerHTML.includes('status')) {
+            statusSpan.innerHTML = `API响应数据：<span class="status ${statusClass}">${statusText}</span>`;
+        }
+    }
+
+    // 复制结果
+    function copyResult() {
+        navigator.clipboard.writeText(lastResult).then(() => {
+            alert('结果已复制到剪贴板');
+        }).catch(err => {
+            console.error('复制失败:', err);
+        });
+    }
+
+    // 1. 加载商品信息
+    async function loadProductInfo() {
+        const productId = document.getElementById('productId').value;
+        if (!productId) {
+            alert('请输入商品ID');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/product/${productId}`);
+            const product = await response.json();
+
+            document.getElementById('productInfo').style.display = 'block';
+            document.getElementById('productTitle').textContent = product.title;
+            document.getElementById('productPrice').textContent = '¥' + product.price;
+            document.getElementById('productStock').textContent = product.stock;
+            document.getElementById('productSeller').textContent = product.sellerName;
+
+            if (product.mainImage) {
+                document.getElementById('productImage').src = product.mainImage;
+            } else {
+                document.getElementById('productImage').src = 'https://via.placeholder.com/80';
+            }
+
+            showResult('商品信息加载成功：\n' + JSON.stringify(product, null, 2));
+        } catch (error) {
+            showResult('加载商品信息失败：' + error.message, true);
+        }
+    }
+
+    // 2. 生成订单号
+    async function generateOrderNo() {
+        try {
+            const response = await fetch('/api/order/generate-order-no');
+            const data = await response.json();
+            showResult('生成的订单号：\n' + JSON.stringify(data, null, 2));
+            return data.orderNo;
+        } catch (error) {
+            showResult('生成订单号失败：' + error.message, true);
+            return null;
+        }
+    }
+
+    // 3. 创建订单
+    async function createOrder() {
+        const buyerId = document.getElementById('buyerId').value;
+        const productId = document.getElementById('productId').value;
+        const quantity = document.getElementById('quantity').value;
+        const address = document.getElementById('address').value;
+        const phone = document.getElementById('phone').value;
+        const note = document.getElementById('note').value;
+
+        if (!buyerId || !productId || !quantity || !address || !phone) {
+            alert('请填写所有必填项');
+            return;
+        }
+
+        // 构造订单项
+        const orderItems = [{
+            productId: parseInt(productId),
+            quantity: parseInt(quantity),
+            productSpec: '默认规格'
+        }];
+
+        try {
+            const response = await fetch(`/api/order/create?buyerId=${buyerId}&address=${encodeURIComponent(address)}&phone=${encodeURIComponent(phone)}&note=${encodeURIComponent(note || '')}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(orderItems)
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                currentOrder = data.order;
+                document.getElementById('orderId').value = currentOrder.id;
+                document.getElementById('orderNo').value = currentOrder.orderNo;
+
+                // 更新订单流程显示
+                updateOrderFlow(currentOrder.status);
+
+                showResult('订单创建成功！\n' + JSON.stringify(data, null, 2));
+                await getOrderDetail(); // 自动加载订单详情
+            } else {
+                showResult('订单创建失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('创建订单失败：' + error.message, true);
+        }
+    }
+
+    // 4. 获取订单详情
+    async function getOrderDetail() {
+        const orderId = document.getElementById('orderId').value;
+        if (!orderId) {
+            alert('请输入订单ID');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/order/${orderId}`);
+            const data = await response.json();
+
+            if (data.success) {
+                currentOrder = data.data.order;
+                updateOrderDetail(data.data);
+                updateOrderFlow(currentOrder.status);
+                showResult('订单详情：\n' + JSON.stringify(data.data, null, 2));
+            } else {
+                showResult('获取订单详情失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('获取订单详情失败：' + error.message, true);
+        }
+    }
+
+    // 5. 更新订单详情显示
+    function updateOrderDetail(data) {
+        const order = data.order;
+        const items = data.items || [];
+
+        let html = `
+                <div class="info-row">
+                    <div class="info-label">订单号：</div>
+                    <div class="info-value">${order.orderNo} ${getStatusBadge(order.status)}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">买家：</div>
+                    <div class="info-value">${order.buyerName} (ID: ${order.buyerId})</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">卖家：</div>
+                    <div class="info-value">${order.sellerName} (ID: ${order.sellerId})</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">总金额：</div>
+                    <div class="info-value">¥${order.totalAmount}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">收货地址：</div>
+                    <div class="info-value">${order.buyerAddress}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">联系电话：</div>
+                    <div class="info-value">${order.buyerPhone}</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">创建时间：</div>
+                    <div class="info-value">${new Date(order.createTime).toLocaleString()}</div>
+                </div>
+            `;
+
+        if (order.paymentTime) {
+            html += `
+                    <div class="info-row">
+                        <div class="info-label">支付时间：</div>
+                        <div class="info-value">${new Date(order.paymentTime).toLocaleString()}</div>
+                    </div>
+                `;
+        }
+
+        if (order.shippingTime) {
+            html += `
+                    <div class="info-row">
+                        <div class="info-label">发货时间：</div>
+                        <div class="info-value">${new Date(order.shippingTime).toLocaleString()}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">物流公司：</div>
+                        <div class="info-value">${order.shippingCompany || '未填写'}</div>
+                    </div>
+                    <div class="info-row">
+                        <div class="info-label">物流单号：</div>
+                        <div class="info-value">${order.trackingNumber || '未填写'}</div>
+                    </div>
+                `;
+        }
+
+        // 商品列表
+        if (items.length > 0) {
+            html += '<hr style="margin: 15px 0; border: 1px solid #c6f6d5;">';
+            html += '<div style="font-weight: bold; margin-bottom: 10px;">购买商品：</div>';
+
+            items.forEach(item => {
+                html += `
+                        <div class="product-card">
+                            <div class="product-info">
+                                <div class="product-title">${item.productTitle}</div>
+                                <div>单价: ¥${item.unitPrice} × ${item.quantity} = ¥${item.subtotal}</div>
+                                <div>规格: ${item.productSpec || '默认'}</div>
+                            </div>
+                        </div>
+                    `;
+            });
+        }
+
+        document.getElementById('orderDetail').innerHTML = html;
+        document.getElementById('orderDetail').style.display = 'block';
+    }
+
+    // 6. 获取状态徽章
+    function getStatusBadge(status) {
+        const statusMap = {
+            'PENDING_PAYMENT': {text: '待付款', class: 'status-pending'},
+            'PAID': {text: '已付款', class: 'status-paid'},
+            'SHIPPED': {text: '已发货', class: 'status-shipped'},
+            'DELIVERED': {text: '已送达', class: 'status-shipped'},
+            'COMPLETED': {text: '已完成', class: 'status-completed'},
+            'CANCELLED': {text: '已取消', class: 'status-cancelled'},
+            'REFUNDING': {text: '退款中', class: 'status-pending'},
+            'REFUNDED': {text: '已退款', class: 'status-cancelled'}
+        };
+
+        const statusInfo = statusMap[status] || {text: status, class: 'status-pending'};
+        return `<span class="status-badge ${statusInfo.class}">${statusInfo.text}</span>`;
+    }
+
+    // 7. 更新订单流程显示
+    function updateOrderFlow(status) {
+        const steps = document.querySelectorAll('.flow-step');
+        steps.forEach(step => step.classList.remove('step-active'));
+
+        const stepIndex = {
+            'PENDING_PAYMENT': 0,
+            'PAID': 1,
+            'SHIPPED': 2,
+            'DELIVERED': 3,
+            'COMPLETED': 4
+        }[status] || 0;
+
+        if (stepIndex < steps.length) {
+            steps[stepIndex].classList.add('step-active');
+        }
+    }
+
+    // 8. 支付订单
+    async function payOrder() {
+        const orderId = document.getElementById('orderId').value;
+        const buyerId = document.getElementById('buyerId').value;
+
+        if (!orderId || !buyerId) {
+            alert('订单ID和买家ID不能为空');
+            return;
+        }
+
+        try {
+            // 先获取订单详情，获取应付金额
+            const orderResponse = await fetch(`/api/order/${orderId}`);
+            const orderData = await orderResponse.json();
+
+            if (!orderData.success) {
+                throw new Error(orderData.message);
+            }
+
+            const amount = orderData.data.order.payableAmount;
+
+            const response = await fetch(`/api/order/${orderId}/pay?buyerId=${buyerId}&amount=${amount}`, {
+                method: 'PUT'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showResult('支付成功！\n' + JSON.stringify(data, null, 2));
+                await getOrderDetail(); // 刷新订单详情
+            } else {
+                showResult('支付失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('支付失败：' + error.message, true);
+        }
+    }
+
+    // 9. 发货
+    async function shipOrder() {
+        const orderId = document.getElementById('orderId').value;
+        const sellerId = document.getElementById('sellerId').value;
+
+        if (!orderId || !sellerId) {
+            alert('订单ID和卖家ID不能为空');
+            return;
+        }
+
+        const shippingCompany = prompt('请输入物流公司：', '顺丰快递');
+        const trackingNumber = prompt('请输入物流单号：', 'SF' + Date.now());
+
+        if (!shippingCompany || !trackingNumber) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/order/${orderId}/ship?sellerId=${sellerId}&shippingCompany=${encodeURIComponent(shippingCompany)}&trackingNumber=${encodeURIComponent(trackingNumber)}`, {
+                method: 'PUT'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showResult('发货成功！\n' + JSON.stringify(data, null, 2));
+                await getOrderDetail(); // 刷新订单详情
+            } else {
+                showResult('发货失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('发货失败：' + error.message, true);
+        }
+    }
+
+    // 10. 确认收货
+    async function confirmDelivery() {
+        const orderId = document.getElementById('orderId').value;
+        const buyerId = document.getElementById('buyerId').value;
+
+        if (!orderId || !buyerId) {
+            alert('订单ID和买家ID不能为空');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/order/${orderId}/confirm?buyerId=${buyerId}`, {
+                method: 'PUT'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showResult('确认收货成功！\n' + JSON.stringify(data, null, 2));
+                await getOrderDetail(); // 刷新订单详情
+            } else {
+                showResult('确认收货失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('确认收货失败：' + error.message, true);
+        }
+    }
+
+    // 11. 取消订单
+    async function cancelOrder() {
+        const orderId = document.getElementById('orderId').value;
+        const userId = document.getElementById('buyerId').value;
+
+        if (!orderId || !userId) {
+            alert('订单ID和用户ID不能为空');
+            return;
+        }
+
+        const reason = prompt('请输入取消原因：', '我不想买了');
+
+        if (!reason) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/order/${orderId}/cancel?userId=${userId}&reason=${encodeURIComponent(reason)}`, {
+                method: 'PUT'
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                showResult('订单取消成功！\n' + JSON.stringify(data, null, 2));
+                await getOrderDetail(); // 刷新订单详情
+            } else {
+                showResult('取消订单失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('取消订单失败：' + error.message, true);
+        }
+    }
+
+    // 12. 获取买家订单列表
+    async function getBuyerOrders() {
+        const buyerId = document.getElementById('buyerId').value;
+
+        if (!buyerId) {
+            alert('请输入买家ID');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/order/buyer/${buyerId}`);
+            const data = await response.json();
+
+            if (data.success) {
+                showResult('买家订单列表：\n' + JSON.stringify(data, null, 2));
+            } else {
+                showResult('获取订单列表失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('获取订单列表失败：' + error.message, true);
+        }
+    }
+
+    // 13. 获取卖家订单列表
+    async function getSellerOrders() {
+        const sellerId = document.getElementById('sellerId').value;
+
+        if (!sellerId) {
+            alert('请输入卖家ID');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/order/seller/${sellerId}`);
+            const data = await response.json();
+
+            if (data.success) {
+                showResult('卖家订单列表：\n' + JSON.stringify(data, null, 2));
+            } else {
+                showResult('获取订单列表失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('获取订单列表失败：' + error.message, true);
+        }
+    }
+
+    // 14. 获取订单统计
+    async function getOrderStats() {
+        const userId = document.getElementById('buyerId').value;
+        const isSeller = confirm('是否查看卖家统计？(确定=卖家，取消=买家)');
+
+        if (!userId) {
+            alert('请输入用户ID');
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/order/stats/${userId}?isSeller=${isSeller}`);
+            const data = await response.json();
+
+            if (data.success) {
+                showResult(`${isSeller ? '卖家' : '买家'}订单统计：\n` + JSON.stringify(data.stats, null, 2));
+            } else {
+                showResult('获取统计失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('获取统计失败：' + error.message, true);
+        }
+    }
+
+    // 15. 获取状态列表
+    async function getStatusList() {
+        try {
+            const response = await fetch('/api/order/status-list');
+            const data = await response.json();
+
+            if (data.success) {
+                showResult('订单状态列表：\n' + JSON.stringify(data.statusList, null, 2));
+            } else {
+                showResult('获取状态列表失败：' + data.message, true);
+            }
+        } catch (error) {
+            showResult('获取状态列表失败：' + error.message, true);
+        }
+    }
+
+    // 页面加载时显示欢迎信息
+    window.onload = function() {
+        showResult('欢迎使用同城快吧订单测试系统！\n\n请按以下步骤测试：\n1. 准备测试数据（填写买家、卖家、商品ID）\n2. 点击"加载商品信息"验证商品\n3. 点击"创建订单"开始订单流程\n4. 按流程测试支付、发货、收货等功能');
+    };
+</script>
+</body>
+</html>
